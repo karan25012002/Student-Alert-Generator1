@@ -3,17 +3,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+import os
 import uvicorn
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
-from app.database.mongodb import connect_to_mongo, close_mongo_connection
+from app.database.mongodb import connect_to_mongo, close_mongo_connection, seed_dummy_data, get_database
 from app.routes import auth, student, alerts, insights, alert_generator
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     await connect_to_mongo()
+    await seed_dummy_data()
     yield
     # Shutdown
     await close_mongo_connection()
@@ -73,14 +75,42 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "environment": settings.ENVIRONMENT}
+    try:
+        # Check database connection
+        db = await get_database()
+        # Test a simple database operation
+        user_count = await db.users.count_documents({})
+        student_count = await db.students.count_documents({})
+        
+        return {
+            "status": "healthy",
+            "environment": settings.ENVIRONMENT,
+            "database": {
+                "connected": True,
+                "users_count": user_count,
+                "students_count": student_count
+            },
+            "api_routes": {
+                "auth": "/api/auth/*",
+                "student": "/api/student/*",
+                "alerts": "/api/alerts/*",
+                "insights": "/api/insights/*",
+                "alert_generator": "/api/alert-generator/*"
+            }
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "error": str(e)
+        }
 
 
 if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8000))
     uvicorn.run(
         "main:app",
-        host="127.0.0.1",
-        port=8000,
+        host="0.0.0.0",
+        port=port,
         reload=settings.DEBUG,
         log_level="info" if settings.DEBUG else "warning"
     )

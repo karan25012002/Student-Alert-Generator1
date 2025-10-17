@@ -2,9 +2,9 @@
 Models for Student Alert Generator feature.
 """
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class StudentAlertRequest(BaseModel):
@@ -18,7 +18,8 @@ class StudentAlertRequest(BaseModel):
     participation_level: Optional[str] = Field("medium", pattern="^(low|medium|high)$", description="Class participation level")
     additional_comments: Optional[str] = Field("", max_length=500, description="Additional comments or observations")
     
-    @validator('academic_performance')
+    @field_validator('academic_performance')
+    @classmethod
     def validate_academic_performance(cls, v):
         """Validate academic performance is in reasonable range."""
         if v < 0:
@@ -27,8 +28,8 @@ class StudentAlertRequest(BaseModel):
             raise ValueError('Academic performance cannot exceed 100')
         return v
     
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "name": "John Doe",
                 "roll_number": "STU12345",
@@ -39,6 +40,7 @@ class StudentAlertRequest(BaseModel):
                 "additional_comments": "Shows improvement in recent weeks"
             }
         }
+    }
 
 
 class GeneratedAlertResponse(BaseModel):
@@ -53,7 +55,8 @@ class GeneratedAlertResponse(BaseModel):
     suggestions: List[str] = []
     reasoning: str = Field(..., description="AI reasoning for this alert")
     confidence_score: float = Field(..., ge=0.0, le=1.0)
-    generated_at: datetime = Field(default_factory=datetime.utcnow)
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 
 
 class AlertGenerationResponse(BaseModel):
@@ -63,11 +66,11 @@ class AlertGenerationResponse(BaseModel):
     student_roll_number: str
     alerts: List[GeneratedAlertResponse]
     summary: Dict[str, Any]
-    generated_at: datetime = Field(default_factory=datetime.utcnow)
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     ai_powered: bool = True
     
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "student_name": "John Doe",
                 "student_roll_number": "STU12345",
@@ -94,6 +97,7 @@ class AlertGenerationResponse(BaseModel):
                 "ai_powered": True
             }
         }
+    }
 
 
 class SaveGeneratedAlertsRequest(BaseModel):

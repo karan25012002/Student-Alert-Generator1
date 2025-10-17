@@ -192,17 +192,49 @@ npm test
 
 ## 🚢 Deployment
 
-### Backend Deployment
-```bash
-cd backend
-uvicorn main:app --host 0.0.0.0 --port 8000
-```
+### GitHub Repository Setup
 
-### Frontend Build
-```bash
-cd frontend
-npm run build
-```
+1. **Initialize Git (if not already done):**
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   ```
+
+2. **Create GitHub Repository:**
+   - Go to [GitHub.com](https://github.com) and create a new repository.
+   - Copy the repository URL (e.g., `https://github.com/username/repo-name.git`).
+
+3. **Push to GitHub:**
+   ```bash
+   git remote add origin <your-repo-url>
+   git branch -M main
+   git push -u origin main
+   ```
+
+### Render Deployment
+
+1. **Create Services Using YAML:**
+   - Place the `render.yaml` file in your project root.
+   - In Render dashboard, go to "Blueprint" and select "Deploy from YAML".
+   - Connect your GitHub repository.
+   - Render will create two services: backend (web) and frontend (static).
+
+2. **Set Secrets in Render:**
+   - For the backend service, add secrets:
+     - `mongodb-atlas-url`: Your MongoDB Atlas connection string.
+     - `secret-key`: A strong JWT secret key.
+     - `google-api-key`: Your Google Gemini API key.
+
+3. **Deploy:**
+   - Render will build and deploy both services.
+   - Backend: `https://student-tracker-backend.onrender.com`
+   - Frontend: `https://student-tracker-frontend.onrender.com`
+
+4. **Seamless Connection:**
+   - The `render.yaml` sets `VITE_API_BASE_URL` for the frontend to point to the backend.
+   - Backend CORS is configured to accept requests from the frontend URL.
+   - No additional configuration needed – the apps are connected automatically.
 
 ## 📝 Development
 
