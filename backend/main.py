@@ -43,6 +43,8 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     )
 
 # CORS middleware
+print(f"DEBUG: ALLOWED_ORIGINS = {settings.ALLOWED_ORIGINS}")
+print(f"DEBUG: ENVIRONMENT = {settings.ENVIRONMENT}")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
@@ -71,6 +73,15 @@ async def root():
         "message": "Student Progress Tracker API",
         "version": "1.0.0",
         "status": "active"
+    }
+
+@app.get("/test-cors")
+async def test_cors():
+    """Test endpoint to verify CORS configuration."""
+    return {
+        "message": "CORS test successful",
+        "allowed_origins": settings.ALLOWED_ORIGINS,
+        "environment": settings.ENVIRONMENT
     }
 
 @app.get("/health")
