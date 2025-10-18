@@ -21,9 +21,10 @@ export default defineConfig({
         manualChunks: {
           // Separate vendor libraries into different chunks
           'react-vendor': ['react', 'react-dom'],
-          'ui-vendor': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
           'router-vendor': ['react-router-dom'],
-          'utils-vendor': ['axios', 'lodash', 'date-fns']
+          'utils-vendor': ['axios', 'zustand'],
+          'ui-vendor': ['lucide-react', 'react-hot-toast'],
+          'charts-vendor': ['recharts']
         }
       }
     }
