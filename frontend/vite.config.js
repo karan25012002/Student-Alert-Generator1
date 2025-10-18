@@ -12,5 +12,20 @@ export default defineConfig({
         secure: false,
       }
     }
+  },
+  build: {
+    // Optimize chunk size warning limit (default is 500kb)
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separate vendor libraries into different chunks
+          'react-vendor': ['react', 'react-dom'],
+          'ui-vendor': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
+          'router-vendor': ['react-router-dom'],
+          'utils-vendor': ['axios', 'lodash', 'date-fns']
+        }
+      }
+    }
   }
 })
