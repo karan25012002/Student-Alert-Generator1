@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
     
     # CORS
-    ALLOWED_ORIGINS: List[str] = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(",")
+    ALLOWED_ORIGINS: List[str] = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,https://student-alert-generator1-3.onrender.com").split(",")
     
     class Config:
         env_file = ".env"
