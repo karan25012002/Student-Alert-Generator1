@@ -2,6 +2,9 @@ from pydantic_settings import BaseSettings
 from typing import List
 import os
 
+# Production frontend URL for CORS configuration
+PRODUCTION_FRONTEND_URL = "https://student-alert-generator1-7.onrender.com"
+
 class Settings(BaseSettings):
     # Database
     MONGODB_URL: str = os.getenv("MONGODB_ATLAS_URL", "mongodb://localhost:27017")
@@ -28,9 +31,8 @@ class Settings(BaseSettings):
         ALLOWED_ORIGINS: List[str] = _default_origins.split(",")
     
     # Always include production frontend URL for Render deployment
-    production_frontend = "https://student-alert-generator1-7.onrender.com"
-    if production_frontend not in ALLOWED_ORIGINS:
-        ALLOWED_ORIGINS.append(production_frontend)
+    if PRODUCTION_FRONTEND_URL not in ALLOWED_ORIGINS:
+        ALLOWED_ORIGINS.append(PRODUCTION_FRONTEND_URL)
     
     class Config:
         env_file = ".env"
