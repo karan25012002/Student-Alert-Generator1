@@ -43,10 +43,6 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     )
 
 # CORS middleware
-print(f"DEBUG: ALLOWED_ORIGINS = {settings.ALLOWED_ORIGINS}")
-print(f"DEBUG: ENVIRONMENT = {settings.ENVIRONMENT}")
-print(f"DEBUG: ALLOWED_ORIGINS env var = {os.getenv('ALLOWED_ORIGINS')}")
-print(f"DEBUG: All env vars: {dict(os.environ)}")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,

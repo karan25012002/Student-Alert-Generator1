@@ -20,7 +20,17 @@ class Settings(BaseSettings):
     DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
     
     # CORS
-    ALLOWED_ORIGINS: List[str] = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,https://student-alert-generator1-3.onrender.com,https://student-alert-generator1-7.onrender.com").split(",")
+    _default_origins = "http://localhost:3000,http://127.0.0.1:3000"
+    _env_origins = os.getenv("ALLOWED_ORIGINS", "")
+    if _env_origins:
+        ALLOWED_ORIGINS: List[str] = _env_origins.split(",")
+    else:
+        ALLOWED_ORIGINS: List[str] = _default_origins.split(",")
+    
+    # Always include production frontend URL for Render deployment
+    production_frontend = "https://student-alert-generator1-7.onrender.com"
+    if production_frontend not in ALLOWED_ORIGINS:
+        ALLOWED_ORIGINS.append(production_frontend)
     
     class Config:
         env_file = ".env"
